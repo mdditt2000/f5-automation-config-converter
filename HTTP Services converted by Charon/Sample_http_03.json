@@ -1,62 +1,108 @@
 {
-    "class": "AS3",
-    "action": "deploy",
-    "persist": true,
-    "declaration": {
-      "class": "ADC",
-      "schemaVersion": "3.0.0",
-      "id": "urn:uuid:76f06c5a-b673-430d-8df4-d817cb3b9f3c",
-      "label": "Sample 3",
-      "remark": "HTTP with extra corp-only virtual",
-      "controls": {
-        "trace": true
-      },
-      "Sample_http_03": {
-        "class": "Tenant",
-        "A1": {
-          "class": "Application",
-          "service": {
-            "class": "Service_HTTP",
-            "virtualAddresses": [
-              "10.0.7.10"
-            ],
-            "pool": "web_pool",
-            "persistenceMethods": [{
-              "use": "jsessionid"
-            }]
-          },
-          "pvt_vs": {
-            "class": "Service_HTTP",
-            "remark": "Serves corporate LAN clients only",
-            "virtualAddresses": [
-              [
-                "10.1.7.10",
-                "10.0.0.0/8"
-              ]
-            ],
-            "snat": "auto",
-            "pool": "web_pool"
-          },
-          "web_pool": {
-            "class": "Pool",
-            "monitors": [
-              "http"
-            ],
-            "members": [{
+  "class": "AS3",
+  "action": "deploy",
+  "persist": true,
+  "declaration": {
+    "class": "ADC",
+    "schemaVersion": "3.0.0",
+    "id": "urn:uuid:76f06c5a-b673-430d-8df4-d817cb3b9f3c",
+    "label": "Sample 3",
+    "remark": "HTTP with extra corp-only virtual",
+    "controls": {
+      "trace": true
+    },
+    "Sample_http_03": {
+      "class": "Tenant",
+      "A1": {
+        "class": "Application",
+        "template": "generic",
+        "web_pool": {
+          "members": [
+            {
+              "addressDiscovery": "static",
               "servicePort": 80,
               "serverAddresses": [
                 "192.0.7.10",
                 "192.0.7.11"
-              ]
-            }]
+              ],
+              "shareNodes": true
+            }
+          ],
+          "minimumMembersActive": 1,
+          "class": "Pool",
+          "minimumMonitors": 1,
+          "monitors": [
+            {
+              "bigip": "/Common/http"
+            }
+          ]
+        },
+        "pvt_vs": {
+          "remark": "Serves corporate LAN clients only",
+          "layer4": "tcp",
+          "persistenceMethods": [
+            "cookie"
+          ],
+          "pool": "web_pool",
+          "translateServerAddress": true,
+          "translateServerPort": true,
+          "class": "Service_HTTP",
+          "profileTCP": {
+            "bigip": "/Common/f5-tcp-progressive"
           },
-          "jsessionid": {
-            "class": "Persist",
-            "persistenceMethod": "cookie",
-            "cookieMethod": "hash",
-            "cookieName": "JSESSIONID"
-          }
+          "profileHTTP": {
+            "bigip": "/Common/http"
+          },
+          "virtualAddresses": [
+            [
+              "10.1.7.10",
+              "10.0.0.0/8"
+            ]
+          ],
+          "virtualPort": 80,
+          "snat": "auto"
+        },
+        "service": {
+          "remark": "A1",
+          "layer4": "tcp",
+          "persistenceMethods": [
+            {
+              "use": "/Sample_http_03/A1/jsessionid"
+            }
+          ],
+          "pool": "web_pool",
+          "translateServerAddress": true,
+          "translateServerPort": true,
+          "class": "Service_HTTP",
+          "profileTCP": {
+            "bigip": "/Common/f5-tcp-progressive"
+          },
+          "profileHTTP": {
+            "bigip": "/Common/http"
+          },
+          "virtualAddresses": [
+            "10.0.7.10"
+          ],
+          "virtualPort": 80,
+          "snat": "auto"
+        },
+        "jsessionid": {
+          "cookieName": "JSESSIONID",
+          "remark": "none",
+          "ttl": 0,
+          "hashCount": 0,
+          "startAt": 0,
+          "matchAcrossPools": false,
+          "matchAcrossVirtualPorts": false,
+          "matchAcrossVirtualAddresses": false,
+          "cookieMethod": "hash",
+          "mirror": false,
+          "overrideConnectionLimit": false,
+          "duration": 0,
+          "class": "Persist",
+          "persistenceMethod": "cookie"
         }
       }
     }
   }
+}

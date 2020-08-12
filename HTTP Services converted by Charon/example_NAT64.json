@@ -1,0 +1,55 @@
+{
+    "class": "ADC",
+    "schemaVersion": "3.14.0",
+    "example_NAT64": {
+        "class": "Tenant",
+        "App1": {
+            "class": "Application",
+            "template": "generic",
+            "web_pool": {
+                "members": [
+                    {
+                        "addressDiscovery": "static",
+                        "servicePort": 80,
+                        "serverAddresses": [
+                            "192.0.1.10",
+                            "192.0.1.11"
+                        ],
+                        "shareNodes": true
+                    }
+                ],
+                "minimumMembersActive": 1,
+                "class": "Pool",
+                "minimumMonitors": 1,
+                "monitors": [
+                    {
+                        "bigip": "/Common/http"
+                    }
+                ]
+            },
+            "service": {
+                "remark": "App1",
+                "layer4": "tcp",
+                "nat64Enabled": true,
+                "persistenceMethods": [
+                    "cookie"
+                ],
+                "pool": "web_pool",
+                "translateServerAddress": true,
+                "translateServerPort": true,
+                "class": "Service_HTTP",
+                "profileTCP": {
+                    "bigip": "/Common/f5-tcp-progressive"
+                },
+                "profileHTTP": {
+                    "bigip": "/Common/http"
+                },
+                "virtualAddresses": [
+                    "9161:7904:7539:6023:5c73:2b27:50c6:46ce"
+                ],
+                "virtualPort": 80,
+                "snat": "auto"
+            }
+        }
+    }
+}

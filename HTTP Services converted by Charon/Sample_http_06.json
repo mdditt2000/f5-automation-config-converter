@@ -2,77 +2,136 @@
     "class": "ADC",
     "schemaVersion": "3.2.0",
     "id": "8675309",
-    "Sample_http_07": {
+    "Sample_http_06": {
         "class": "Tenant",
         "A1": {
             "class": "Application",
-            "service": {
-                "class": "Service_HTTP",
-                "remark": "Defaults to port 80",
-                "virtualAddresses": [
-                    "10.1.10.10"
-                ],
-                "pool": "web_pool80"
-            },
+            "template": "generic",
             "web_pool80": {
-                "class": "Pool",
-                "monitors": [
-                    "http"
-                ],
                 "members": [
                     {
+                        "addressDiscovery": "static",
                         "servicePort": 80,
                         "serverAddresses": [
                             "10.128.0.209"
-                        ]
+                        ],
+                        "shareNodes": true
+                    }
+                ],
+                "minimumMembersActive": 1,
+                "class": "Pool",
+                "minimumMonitors": 1,
+                "monitors": [
+                    {
+                        "bigip": "/Common/http"
                     }
                 ]
             },
-            "service_on_port81": {
-                "class": "Service_HTTP",
-                "remark": "Accepts HTTP connections on port 81",
-                "virtualPort": 81,
-                "virtualAddresses": [
-                    "10.1.10.10"
-                ],
-                "pool": "web_pool81"
-            },
             "web_pool81": {
-                "class": "Pool",
-                "monitors": [
-                    "http"
-                ],
                 "members": [
                     {
+                        "addressDiscovery": "static",
                         "servicePort": 81,
                         "serverAddresses": [
                             "10.128.0.210"
-                        ]
+                        ],
+                        "shareNodes": true
+                    }
+                ],
+                "minimumMembersActive": 1,
+                "class": "Pool",
+                "minimumMonitors": 1,
+                "monitors": [
+                    {
+                        "bigip": "/Common/http"
                     }
                 ]
             },
-            "service_on_port82": {
+            "web_pool82": {
+                "members": [
+                    {
+                        "addressDiscovery": "static",
+                        "servicePort": 82,
+                        "serverAddresses": [
+                            "10.128.0.211"
+                        ],
+                        "shareNodes": true
+                    }
+                ],
+                "minimumMembersActive": 1,
+                "class": "Pool",
+                "minimumMonitors": 1,
+                "monitors": [
+                    {
+                        "bigip": "/Common/http"
+                    }
+                ]
+            },
+            "service": {
+                "remark": "Defaults to port 80",
+                "layer4": "tcp",
+                "persistenceMethods": [
+                    "cookie"
+                ],
+                "pool": "web_pool80",
+                "translateServerAddress": true,
+                "translateServerPort": true,
                 "class": "Service_HTTP",
+                "profileTCP": {
+                    "bigip": "/Common/f5-tcp-progressive"
+                },
+                "profileHTTP": {
+                    "bigip": "/Common/http"
+                },
+                "virtualAddresses": [
+                    "10.1.10.10"
+                ],
+                "virtualPort": 80,
+                "snat": "auto"
+            },
+            "service_on_port81": {
+                "remark": "Accepts HTTP connections on port 81",
+                "layer4": "tcp",
+                "persistenceMethods": [
+                    "cookie"
+                ],
+                "pool": "web_pool81",
+                "translateServerAddress": true,
+                "translateServerPort": true,
+                "class": "Service_HTTP",
+                "profileTCP": {
+                    "bigip": "/Common/f5-tcp-progressive"
+                },
+                "profileHTTP": {
+                    "bigip": "/Common/http"
+                },
+                "virtualAddresses": [
+                    "10.1.10.10"
+                ],
+                "virtualPort": 81,
+                "snat": "auto"
+            },
+            "service_on_port82": {
                 "remark": "Accepts HTTP connections on port 82",
+                "layer4": "tcp",
+                "persistenceMethods": [
+                    "cookie"
+                ],
+                "pool": "web_pool82",
+                "translateServerAddress": true,
+                "translateServerPort": true,
+                "class": "Service_HTTP",
+                "profileTCP": {
+                    "bigip": "/Common/f5-tcp-progressive"
+                },
+                "profileHTTP": {
+                    "bigip": "/Common/http"
+                },
                 "virtualAddresses": [
                     "10.1.10.10"
                 ],
                 "virtualPort": 82,
-                "pool": "web_pool82"
-            },
-            "web_pool82": {
-                "class": "Pool",
-                "monitors": [
-                    "http"
-                ],
-                "members": [
-                    {
-                        "servicePort": 82,
-                        "serverAddresses": [
-                            "10.128.0.211"
-                        ]
-                    }
-                ]
+                "snat": "auto"
             }
         }
     }

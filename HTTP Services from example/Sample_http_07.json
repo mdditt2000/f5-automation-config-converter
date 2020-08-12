@@ -4,7 +4,7 @@
     "id": "ltm_policy",
     "label": "",
     "remark": "Simple HTTP application with LTM policy",
-    "Sample_http_08": {
+    "Sample_http_07": {
       "class": "Tenant",
       "A1": {
         "class": "Application",
