@@ -14,6 +14,7 @@
                 "interval": 5,
                 "dscp": 0,
                 "send": "GET /\\r\\n",
+                "receive": "",
                 "timeUntilUp": 0,
                 "timeout": 16,
                 "class": "Monitor",
